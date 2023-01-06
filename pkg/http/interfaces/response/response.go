@@ -9,8 +9,7 @@ type Response interface {
 type ResponseWriter interface {
 	SetContent(any)
 	SetStatusCode(int)
-	AddHeader(map[string]string)
-	AddHeaders([]map[string]string)
+	AddHeader(key string, value string)
 	JsonResponse() (Response, error)
 	HtmlResponse() (Response, error)
 	Response() Response

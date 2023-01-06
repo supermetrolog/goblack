@@ -100,27 +100,15 @@ func (m *MockResponseWriter) EXPECT() *MockResponseWriterMockRecorder {
 }
 
 // AddHeader mocks base method.
-func (m *MockResponseWriter) AddHeader(arg0 map[string]string) {
+func (m *MockResponseWriter) AddHeader(key, value string) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "AddHeader", arg0)
+	m.ctrl.Call(m, "AddHeader", key, value)
 }
 
 // AddHeader indicates an expected call of AddHeader.
-func (mr *MockResponseWriterMockRecorder) AddHeader(arg0 interface{}) *gomock.Call {
+func (mr *MockResponseWriterMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*MockResponseWriter)(nil).AddHeader), arg0)
-}
-
-// AddHeaders mocks base method.
-func (m *MockResponseWriter) AddHeaders(arg0 []map[string]string) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "AddHeaders", arg0)
-}
-
-// AddHeaders indicates an expected call of AddHeaders.
-func (mr *MockResponseWriterMockRecorder) AddHeaders(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeaders", reflect.TypeOf((*MockResponseWriter)(nil).AddHeaders), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*MockResponseWriter)(nil).AddHeader), key, value)
 }
 
 // HtmlResponse mocks base method.

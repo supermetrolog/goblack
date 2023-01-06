@@ -9,29 +9,29 @@ import (
 )
 
 type next struct {
-	nextDefault Handle
-	Handlers    queue.Queue
+	handler  Handler
+	Handlers queue.Queue
 }
 type nextWrapper struct {
 	n *next
 }
 
-func (n nextWrapper) Handle(res response.ResponseWriter, req request.Request, next Handle) (response.Response, error) {
+func (n nextWrapper) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
 	return n.n.Next(res, req)
 }
-func newNext(q queue.Queue, nextDefault Handle) next {
+func newNext(q queue.Queue, handler Handler) next {
 	return next{
-		Handlers:    q,
-		nextDefault: nextDefault,
+		Handlers: q,
+		handler:  handler,
 	}
 }
 func (n next) Next(res response.ResponseWriter, req request.Request) (response.Response, error) {
 	if n.Handlers.IsEmpty() {
-		return n.nextDefault.Handle(res, req, nil)
+		return n.handler.Handler(res, req)
 	}
-	current, ok := n.Handlers.Dequeue().(Handle)
+	current, ok := n.Handlers.Dequeue().(Middleware)
 	if !ok {
 		return nil, errors.New("unknown item in Handlers Queue")
 	}
-	return current.Handle(res, req, nextWrapper{n: &n})
+	return current.Handler(res, req, nextWrapper{n: &n})
 }

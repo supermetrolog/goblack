@@ -16,13 +16,13 @@ func New() *Pipeline {
 	return &Pipeline{}
 }
 
-func (p *Pipeline) Pipe(handle Handle) {
-	p.Handlers.Enqueue(handle)
+func (p *Pipeline) Pipe(middleware Middleware) {
+	p.Handlers.Enqueue(middleware)
 }
-func (p *Pipeline) Handle(res response.ResponseWriter, req request.Request, nextDefault Handle) (response.Response, error) {
-	if nextDefault == nil {
-		return nil, errors.New("default Handle can not be nil")
+func (p *Pipeline) Handler(res response.ResponseWriter, req request.Request, handler Handler) (response.Response, error) {
+	if handler == nil {
+		return nil, errors.New("handler can not be nil")
 	}
-	n := newNext(p.Handlers, nextDefault)
+	n := newNext(p.Handlers, handler)
 	return n.Next(res, req)
 }
