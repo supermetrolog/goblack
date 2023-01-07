@@ -1,4 +1,4 @@
-package pipeline
+package handler
 
 import (
 	"github.com/supermetrolog/framework/pkg/http/interfaces/request"

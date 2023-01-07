@@ -5,12 +5,13 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
 	"github.com/supermetrolog/framework/pkg/http/pipeline"
+	mock_handler "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/handler"
 	mock_request "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/request"
 	mock_response "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/response"
-	mock_pipeline "github.com/supermetrolog/framework/tests/mocks/pkg/http/pipeline"
 )
 
 func TestPipeline_pipe(t *testing.T) {
@@ -19,8 +20,8 @@ func TestPipeline_pipe(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockHandler := mock_pipeline.NewMockMiddleware(ctrl)
-	mockHandler2 := mock_pipeline.NewMockMiddleware(ctrl)
+	mockHandler := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
 
 	p.Pipe(mockHandler)
 	p.Pipe(mockHandler2)
@@ -37,7 +38,7 @@ func TestPipeline_runWithDefaultHandler(t *testing.T) {
 	mockReq := mock_request.NewMockRequest(ctrl)
 	mockResWriter := mock_response.NewMockResponseWriter(ctrl)
 	mockRes := mock_response.NewMockResponse(ctrl)
-	mockHandler := mock_pipeline.NewMockHandler(ctrl)
+	mockHandler := mock_handler.NewMockHandler(ctrl)
 	mockHandler.EXPECT().Handler(mockResWriter, mockReq).Return(mockRes, nil)
 
 	_, err := p.Handler(mockResWriter, mockReq, mockHandler)
@@ -95,16 +96,16 @@ func TestPipeline_doubleRun(t *testing.T) {
 	mockResWriter := mock_response.NewMockResponseWriter(ctrl)
 	mockReq := mock_request.NewMockRequest(ctrl)
 
-	mockHandlerDefault := mock_pipeline.NewMockHandler(ctrl)
+	mockHandlerDefault := mock_handler.NewMockHandler(ctrl)
 	mockHandlerDefault.EXPECT().Handler(mockResWriter, mockReq).Times(2)
 
-	mockHandler2 := mock_pipeline.NewMockMiddleware(ctrl)
-	mockHandler2.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler2.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 		return next.Handler(res, req)
 	}).Times(2)
 
-	mockHandler1 := mock_pipeline.NewMockMiddleware(ctrl)
-	mockHandler1.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+	mockHandler1 := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler1.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 		return next.Handler(res, req)
 	}).Times(2)
 
@@ -128,16 +129,16 @@ func TestPipeline_PipelineInPipeline(t *testing.T) {
 	mockResWriter := mock_response.NewMockResponseWriter(ctrl)
 	mockReq := mock_request.NewMockRequest(ctrl)
 
-	mockHandlerDefault := mock_pipeline.NewMockHandler(ctrl)
+	mockHandlerDefault := mock_handler.NewMockHandler(ctrl)
 	mockHandlerDefault.EXPECT().Handler(mockResWriter, mockReq)
 
-	mockHandler2 := mock_pipeline.NewMockMiddleware(ctrl)
-	mockHandler2.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler2.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 		return next.Handler(res, req)
 	}).Times(2)
 
-	mockHandler1 := mock_pipeline.NewMockMiddleware(ctrl)
-	mockHandler1.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+	mockHandler1 := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler1.EXPECT().Handler(mockResWriter, mockReq, gomock.Any()).DoAndReturn(func(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 		return next.Handler(res, req)
 	}).Times(2)
 
@@ -154,21 +155,21 @@ func TestPipeline_PipelineInPipeline(t *testing.T) {
 
 type mockMiddleware1 struct{}
 
-func (m mockMiddleware1) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (m mockMiddleware1) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	res.AddHeader("header1", "value1")
 	return next.Handler(res, req)
 }
 
 type mockMiddleware2 struct{}
 
-func (m mockMiddleware2) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (m mockMiddleware2) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	res.AddHeader("header2", "value2")
 	return next.Handler(res, req)
 }
 
 type mockMiddleware3 struct{}
 
-func (m mockMiddleware3) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (m mockMiddleware3) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	res.AddHeader("header3", "value3")
 	res.SetContent("suka")
 	return res.Response(), nil

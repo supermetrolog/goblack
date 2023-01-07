@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/supermetrolog/framework/pkg/http/app"
+	application "github.com/supermetrolog/framework/pkg/http/app"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
 	"github.com/supermetrolog/framework/pkg/http/pipeline"
@@ -18,7 +19,7 @@ type AdapterMiddleware struct {
 	R *http.Request
 }
 
-func (l AdapterMiddleware) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (l AdapterMiddleware) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	log.Println("Logger middleware")
 
 	nextRes, err := next.Handler(res, req)
@@ -28,7 +29,7 @@ func (l AdapterMiddleware) Handler(res response.ResponseWriter, req request.Requ
 
 type LoggerMiddleware struct{}
 
-func (l LoggerMiddleware) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (l LoggerMiddleware) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	log.Println("Logger middleware")
 
 	nextRes, err := next.Handler(res, req)
@@ -38,7 +39,7 @@ func (l LoggerMiddleware) Handler(res response.ResponseWriter, req request.Reque
 
 type LoggerMiddleware2 struct{}
 
-func (l LoggerMiddleware2) Handler(res response.ResponseWriter, req request.Request, next pipeline.Handler) (response.Response, error) {
+func (l LoggerMiddleware2) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	log.Println("Logger middleware2")
 	res.SetContent("fuck")
 	next.Handler(res, req)
@@ -47,8 +48,15 @@ func (l LoggerMiddleware2) Handler(res response.ResponseWriter, req request.Requ
 	return res.JsonResponse()
 }
 
-type Handler struct{}
+type Handler struct {
+	logger log.Logger
+}
 
+func NewHandler(logger log.Logger) Handler {
+	return Handler{
+		logger: logger,
+	}
+}
 func (l Handler) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
 	log.Println("Handler")
 	array := []string{"nigger", "fuck", "suck"}
@@ -58,9 +66,14 @@ func (l Handler) Handler(res response.ResponseWriter, req request.Request) (resp
 }
 func main() {
 	fmt.Println("MAIN")
-	app := app.New()
+	app := application.New(pipeline.New())
 	app.Pipe(LoggerMiddleware{})
 	app.Pipe(LoggerMiddleware{})
 	app.Pipe(LoggerMiddleware2{})
-	app.Handler(resps.NewResponseWriter(), reqst.NewRequest(nil, nil, nil), Handler{})
+
+	app2 := application.New(pipeline.New())
+	app2.Pipe(LoggerMiddleware{})
+	app.Pipe(app2)
+	app.Handler(resps.NewResponseWriter(), reqst.NewRequest(nil, nil, nil), NewHandler(log.Logger{}))
+	// app.GET("/users", NewHandler(log.Logger{}), LoggerMiddleware, LoggerMiddleware2)
 }

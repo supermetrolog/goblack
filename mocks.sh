@@ -9,7 +9,7 @@ rm -rf ./${MOCKS_PATH}
 
 echo "Generate PKG mocks..."
 pkg_files=(
-            http/pipeline/handler.go
+            http/interfaces/handler/handler.go
             http/interfaces/request/request.go
             http/interfaces/response/response.go
             )

@@ -1,13 +1,29 @@
 package app
 
 import (
-	"github.com/supermetrolog/framework/pkg/http/pipeline"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
 )
 
-type App struct {
-	pipeline.Pipeline
+type Pipeline interface {
+	handler.Middleware
+	Pipe(handler.Middleware)
 }
 
-func New() *App {
-	return &App{}
+type App struct {
+	pipeline Pipeline
+}
+
+func New(pipeline Pipeline) *App {
+	return &App{
+		pipeline: pipeline,
+	}
+}
+
+func (app *App) Pipe(middleware handler.Middleware) {
+	app.pipeline.Pipe(middleware)
+}
+func (app App) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
+	return app.pipeline.Handler(res, req, next)
 }
