@@ -76,6 +76,20 @@ func (mr *MockRequestMockRecorder) Headers() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Headers", reflect.TypeOf((*MockRequest)(nil).Headers))
 }
 
+// Param mocks base method.
+func (m *MockRequest) Param(name string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Param", name)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Param indicates an expected call of Param.
+func (mr *MockRequestMockRecorder) Param(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Param", reflect.TypeOf((*MockRequest)(nil).Param), name)
+}
+
 // QueryParam mocks base method.
 func (m *MockRequest) QueryParam(name string) string {
 	m.ctrl.T.Helper()

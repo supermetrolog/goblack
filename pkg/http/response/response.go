@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"encoding/xml"
 
 	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
 )
@@ -44,14 +45,17 @@ func NewResponseWriter() *ResponseWriter {
 		headers: make(map[string]string),
 	}
 }
-func (r *ResponseWriter) SetContent(content any) {
+func (r *ResponseWriter) SetContent(content any) response.ResponseWriter {
 	r.content = content
+	return r
 }
-func (r *ResponseWriter) SetStatusCode(statusCode int) {
+func (r *ResponseWriter) SetStatusCode(statusCode int) response.ResponseWriter {
 	r.statusCode = statusCode
+	return r
 }
-func (r *ResponseWriter) AddHeader(key string, value string) {
+func (r *ResponseWriter) AddHeader(key string, value string) response.ResponseWriter {
 	r.headers[key] = value
+	return r
 }
 func (r ResponseWriter) JsonResponse() (response.Response, error) {
 	bytes, err := json.Marshal(r.content)
@@ -64,6 +68,11 @@ func (r ResponseWriter) JsonResponse() (response.Response, error) {
 func (r ResponseWriter) HtmlResponse() (response.Response, error) {
 	return nil, nil
 }
-func (r ResponseWriter) Response() response.Response {
-	return nil
+func (r ResponseWriter) XmlResponse() (response.Response, error) {
+	bytes, err := xml.Marshal(r.content)
+	if err != nil {
+		return nil, err
+	}
+	response := NewResponse(bytes, r.statusCode, r.headers)
+	return response, nil
 }

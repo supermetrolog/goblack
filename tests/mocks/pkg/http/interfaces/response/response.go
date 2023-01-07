@@ -100,9 +100,11 @@ func (m *MockResponseWriter) EXPECT() *MockResponseWriterMockRecorder {
 }
 
 // AddHeader mocks base method.
-func (m *MockResponseWriter) AddHeader(key, value string) {
+func (m *MockResponseWriter) AddHeader(key, value string) response.ResponseWriter {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "AddHeader", key, value)
+	ret := m.ctrl.Call(m, "AddHeader", key, value)
+	ret0, _ := ret[0].(response.ResponseWriter)
+	return ret0
 }
 
 // AddHeader indicates an expected call of AddHeader.
@@ -141,24 +143,12 @@ func (mr *MockResponseWriterMockRecorder) JsonResponse() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "JsonResponse", reflect.TypeOf((*MockResponseWriter)(nil).JsonResponse))
 }
 
-// Response mocks base method.
-func (m *MockResponseWriter) Response() response.Response {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Response")
-	ret0, _ := ret[0].(response.Response)
-	return ret0
-}
-
-// Response indicates an expected call of Response.
-func (mr *MockResponseWriterMockRecorder) Response() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Response", reflect.TypeOf((*MockResponseWriter)(nil).Response))
-}
-
 // SetContent mocks base method.
-func (m *MockResponseWriter) SetContent(arg0 any) {
+func (m *MockResponseWriter) SetContent(arg0 any) response.ResponseWriter {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetContent", arg0)
+	ret := m.ctrl.Call(m, "SetContent", arg0)
+	ret0, _ := ret[0].(response.ResponseWriter)
+	return ret0
 }
 
 // SetContent indicates an expected call of SetContent.
@@ -168,13 +158,30 @@ func (mr *MockResponseWriterMockRecorder) SetContent(arg0 interface{}) *gomock.C
 }
 
 // SetStatusCode mocks base method.
-func (m *MockResponseWriter) SetStatusCode(arg0 int) {
+func (m *MockResponseWriter) SetStatusCode(arg0 int) response.ResponseWriter {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetStatusCode", arg0)
+	ret := m.ctrl.Call(m, "SetStatusCode", arg0)
+	ret0, _ := ret[0].(response.ResponseWriter)
+	return ret0
 }
 
 // SetStatusCode indicates an expected call of SetStatusCode.
 func (mr *MockResponseWriterMockRecorder) SetStatusCode(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetStatusCode", reflect.TypeOf((*MockResponseWriter)(nil).SetStatusCode), arg0)
+}
+
+// XmlResponse mocks base method.
+func (m *MockResponseWriter) XmlResponse() (response.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "XmlResponse")
+	ret0, _ := ret[0].(response.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// XmlResponse indicates an expected call of XmlResponse.
+func (mr *MockResponseWriterMockRecorder) XmlResponse() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "XmlResponse", reflect.TypeOf((*MockResponseWriter)(nil).XmlResponse))
 }

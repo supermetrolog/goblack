@@ -73,7 +73,7 @@ func TestPipeline_runWithManyHandlers(t *testing.T) {
 	)
 
 	mockResWriter.EXPECT().SetContent("content")
-	mockResWriter.EXPECT().Response()
+	mockResWriter.EXPECT().JsonResponse()
 
 	mockReq := mock_request.NewMockRequest(ctrl)
 
@@ -172,7 +172,7 @@ type mockMiddleware3 struct{}
 func (m mockMiddleware3) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
 	res.AddHeader("header3", "value3")
 	res.SetContent("suka")
-	return res.Response(), nil
+	return res.JsonResponse()
 }
 
 type mockHandler struct{}
@@ -180,5 +180,5 @@ type mockHandler struct{}
 func (m mockHandler) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
 	res.AddHeader("header4", "value4")
 	res.SetContent("content")
-	return res.Response(), nil
+	return res.JsonResponse()
 }

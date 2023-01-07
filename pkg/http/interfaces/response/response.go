@@ -7,10 +7,10 @@ type Response interface {
 }
 
 type ResponseWriter interface {
-	SetContent(any)
-	SetStatusCode(int)
-	AddHeader(key string, value string)
+	SetContent(any) ResponseWriter
+	SetStatusCode(int) ResponseWriter
+	AddHeader(key string, value string) ResponseWriter
 	JsonResponse() (Response, error)
 	HtmlResponse() (Response, error)
-	Response() Response
+	XmlResponse() (Response, error)
 }

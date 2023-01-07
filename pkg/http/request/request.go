@@ -6,17 +6,20 @@ type Request struct {
 	readCloser  io.ReadCloser
 	headers     map[string]string
 	queryParams map[string]string
+	pathParams  map[string]string
 }
 
 func NewRequest(
 	readCloser io.ReadCloser,
 	headers map[string]string,
 	queryParams map[string]string,
+	pathParams map[string]string,
 ) *Request {
 	return &Request{
 		readCloser:  readCloser,
 		headers:     headers,
 		queryParams: queryParams,
+		pathParams:  pathParams,
 	}
 }
 
@@ -46,4 +49,12 @@ func (r Request) QueryParam(name string) string {
 
 func (r Request) QueryParams() map[string]string {
 	return r.queryParams
+}
+
+func (r Request) Param(name string) string {
+	value, ok := r.pathParams[name]
+	if !ok {
+		return ""
+	}
+	return value
 }
