@@ -6,12 +6,10 @@ import (
 	"net/http"
 
 	application "github.com/supermetrolog/framework/pkg/http/app"
+	"github.com/supermetrolog/framework/pkg/http/httpcontext"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
+	httpcontextInterface "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 	"github.com/supermetrolog/framework/pkg/http/pipeline"
-	reqst "github.com/supermetrolog/framework/pkg/http/request"
-	resps "github.com/supermetrolog/framework/pkg/http/response"
 )
 
 type AdapterMiddleware struct {
@@ -19,33 +17,33 @@ type AdapterMiddleware struct {
 	R *http.Request
 }
 
-func (l AdapterMiddleware) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
+func (l AdapterMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
 	log.Println("Logger middleware")
 
-	nextRes, err := next.Handler(res, req)
+	nextRes, err := next.Handler(c)
 	log.Println(nextRes.Headers())
 	return nextRes, err
 }
 
 type LoggerMiddleware struct{}
 
-func (l LoggerMiddleware) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
+func (l LoggerMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
 	log.Println("Logger middleware")
 
-	nextRes, err := next.Handler(res, req)
+	nextRes, err := next.Handler(c)
 	log.Println(nextRes.Headers())
 	return nextRes, err
 }
 
 type LoggerMiddleware2 struct{}
 
-func (l LoggerMiddleware2) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
+func (l LoggerMiddleware2) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
 	log.Println("Logger middleware2")
-	res.SetContent("fuck")
-	next.Handler(res, req)
-	res.SetContent("fuck")
-	res.AddHeader("fuck", "suck")
-	return res.JsonResponse()
+	c.ResponseWriter().SetContent("fuck")
+	next.Handler(c)
+	c.ResponseWriter().SetContent("fuck")
+	c.ResponseWriter().AddHeader("fuck", "suck")
+	return c.ResponseWriter().JsonResponse()
 }
 
 type Handler struct {
@@ -57,15 +55,18 @@ func NewHandler(logger log.Logger) Handler {
 		logger: logger,
 	}
 }
-func (l Handler) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
+func (l Handler) Handler(c httpcontextInterface.Context) (httpcontextInterface.Response, error) {
 	log.Println("Handler")
 	array := []string{"nigger", "fuck", "suck"}
-	res.SetContent(array)
-	res.AddHeader("nigga", "pidor")
-	return res.JsonResponse()
+	c.ResponseWriter().SetContent(array)
+	c.ResponseWriter().AddHeader("nigga", "pidor")
+	return c.ResponseWriter().JsonResponse()
 }
 func main() {
 	fmt.Println("MAIN")
+	r, _ := http.NewRequest("GET", "/users", nil)
+	httpContext := httpcontext.New(r, httpcontext.NewResponseWriter(), map[string]string{"id": "12", "test": "1234"})
+
 	app := application.New(pipeline.New())
 	app.Pipe(LoggerMiddleware{})
 	app.Pipe(LoggerMiddleware{})
@@ -74,6 +75,6 @@ func main() {
 	app2 := application.New(pipeline.New())
 	app2.Pipe(LoggerMiddleware{})
 	app.Pipe(app2)
-	app.Handler(resps.NewResponseWriter(), reqst.NewRequest(nil, nil), NewHandler(log.Logger{}))
+	app.Handler(httpContext, NewHandler(log.Logger{}))
 	app.GET("/users", NewHandler(log.Logger{}), LoggerMiddleware{}, LoggerMiddleware2{})
 }

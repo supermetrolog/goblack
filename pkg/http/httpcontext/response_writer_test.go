@@ -1,4 +1,4 @@
-package response_test
+package httpcontext_test
 
 import (
 	"encoding/json"
@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/framework/pkg/http/response"
+	"github.com/supermetrolog/framework/pkg/http/httpcontext"
 )
 
 func TestSetContent(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	content := "test content"
 	contentBytes, _ := json.Marshal(content)
 	resWriter.SetContent(content)
@@ -19,7 +19,7 @@ func TestSetContent(t *testing.T) {
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestSetStatusCode(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	resWriter.SetStatusCode(404)
 	res, err := resWriter.JsonResponse()
 	assert.NoError(t, err)
@@ -27,7 +27,7 @@ func TestSetStatusCode(t *testing.T) {
 }
 
 func TestAddHeader(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	headers := map[string][]string{
 		"Content-Type": {"application/json"},
 		"server":       {"nginx"},
@@ -46,7 +46,7 @@ func TestAddHeader(t *testing.T) {
 	assert.Equal(t, headers, res.Headers())
 }
 func TestJsonResponseWithStruct(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	content := struct {
 		Username string
 		Password string
@@ -63,7 +63,7 @@ func TestJsonResponseWithStruct(t *testing.T) {
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestXmlResponseWithString(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	content := "content"
 	contentBytes, _ := xml.Marshal(content)
 	resWriter.SetContent(content)
@@ -72,7 +72,7 @@ func TestXmlResponseWithString(t *testing.T) {
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestXmlResponseWithArray(t *testing.T) {
-	resWriter := response.NewResponseWriter()
+	resWriter := httpcontext.NewResponseWriter()
 	content := []string{
 		"John",
 		"qwerty",

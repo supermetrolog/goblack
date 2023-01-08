@@ -10,8 +10,7 @@ rm -rf ./${MOCKS_PATH}
 echo "Generate PKG mocks..."
 pkg_files=(
             http/interfaces/handler/handler.go
-            http/interfaces/request/request.go
-            http/interfaces/response/response.go
+            http/interfaces/httpcontext/httpcontext.go
             )
 
 for file in ${pkg_files[*]}

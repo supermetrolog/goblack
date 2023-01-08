@@ -9,8 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	handler "github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	request "github.com/supermetrolog/framework/pkg/http/interfaces/request"
-	response "github.com/supermetrolog/framework/pkg/http/interfaces/response"
+	httpcontext "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 )
 
 // MockHandler is a mock of Handler interface.
@@ -37,18 +36,18 @@ func (m *MockHandler) EXPECT() *MockHandlerMockRecorder {
 }
 
 // Handler mocks base method.
-func (m *MockHandler) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
+func (m *MockHandler) Handler(c httpcontext.Context) (httpcontext.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Handler", res, req)
-	ret0, _ := ret[0].(response.Response)
+	ret := m.ctrl.Call(m, "Handler", c)
+	ret0, _ := ret[0].(httpcontext.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Handler indicates an expected call of Handler.
-func (mr *MockHandlerMockRecorder) Handler(res, req interface{}) *gomock.Call {
+func (mr *MockHandlerMockRecorder) Handler(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handler", reflect.TypeOf((*MockHandler)(nil).Handler), res, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handler", reflect.TypeOf((*MockHandler)(nil).Handler), c)
 }
 
 // MockMiddleware is a mock of Middleware interface.
@@ -75,16 +74,16 @@ func (m *MockMiddleware) EXPECT() *MockMiddlewareMockRecorder {
 }
 
 // Handler mocks base method.
-func (m *MockMiddleware) Handler(res response.ResponseWriter, req request.Request, next handler.Handler) (response.Response, error) {
+func (m *MockMiddleware) Handler(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Handler", res, req, next)
-	ret0, _ := ret[0].(response.Response)
+	ret := m.ctrl.Call(m, "Handler", c, next)
+	ret0, _ := ret[0].(httpcontext.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Handler indicates an expected call of Handler.
-func (mr *MockMiddlewareMockRecorder) Handler(res, req, next interface{}) *gomock.Call {
+func (mr *MockMiddlewareMockRecorder) Handler(c, next interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handler", reflect.TypeOf((*MockMiddleware)(nil).Handler), res, req, next)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handler", reflect.TypeOf((*MockMiddleware)(nil).Handler), c, next)
 }

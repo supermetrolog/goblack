@@ -1,10 +1,10 @@
-package response
+package httpcontext
 
 import (
 	"encoding/json"
 	"encoding/xml"
 
-	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 )
 
 type Response struct {
@@ -45,19 +45,19 @@ func NewResponseWriter() *ResponseWriter {
 		headers: make(map[string][]string),
 	}
 }
-func (r *ResponseWriter) SetContent(content any) response.ResponseWriter {
+func (r *ResponseWriter) SetContent(content any) httpcontext.ResponseWriter {
 	r.content = content
 	return r
 }
-func (r *ResponseWriter) SetStatusCode(statusCode int) response.ResponseWriter {
+func (r *ResponseWriter) SetStatusCode(statusCode int) httpcontext.ResponseWriter {
 	r.statusCode = statusCode
 	return r
 }
-func (r *ResponseWriter) AddHeader(key string, value string) response.ResponseWriter {
+func (r *ResponseWriter) AddHeader(key string, value string) httpcontext.ResponseWriter {
 	r.headers[key] = append(r.headers[key], value)
 	return r
 }
-func (r ResponseWriter) JsonResponse() (response.Response, error) {
+func (r ResponseWriter) JsonResponse() (httpcontext.Response, error) {
 	bytes, err := json.Marshal(r.content)
 	if err != nil {
 		return nil, err
@@ -65,10 +65,10 @@ func (r ResponseWriter) JsonResponse() (response.Response, error) {
 	response := NewResponse(bytes, r.statusCode, r.headers)
 	return response, nil
 }
-func (r ResponseWriter) HtmlResponse() (response.Response, error) {
+func (r ResponseWriter) HtmlResponse() (httpcontext.Response, error) {
 	return nil, nil
 }
-func (r ResponseWriter) XmlResponse() (response.Response, error) {
+func (r ResponseWriter) XmlResponse() (httpcontext.Response, error) {
 	bytes, err := xml.Marshal(r.content)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,8 @@
-package response
+package httpcontext
+
+import (
+	"net/http"
+)
 
 type Response interface {
 	Content() []byte
@@ -13,4 +17,10 @@ type ResponseWriter interface {
 	JsonResponse() (Response, error)
 	HtmlResponse() (Response, error)
 	XmlResponse() (Response, error)
+}
+
+type Context interface {
+	Request() *http.Request
+	Param(key string) string
+	ResponseWriter() ResponseWriter
 }

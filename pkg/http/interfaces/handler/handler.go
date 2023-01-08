@@ -1,14 +1,13 @@
 package handler
 
 import (
-	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 )
 
 type Handler interface {
-	Handler(res response.ResponseWriter, req request.Request) (response.Response, error)
+	Handler(c httpcontext.Context) (httpcontext.Response, error)
 }
 
 type Middleware interface {
-	Handler(res response.ResponseWriter, req request.Request, next Handler) (response.Response, error)
+	Handler(c httpcontext.Context, next Handler) (httpcontext.Response, error)
 }

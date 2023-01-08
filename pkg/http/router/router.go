@@ -5,10 +5,9 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/supermetrolog/framework/pkg/http/app"
+	"github.com/supermetrolog/framework/pkg/http/httpcontext"
 	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
-	reqst "github.com/supermetrolog/framework/pkg/http/request"
-	"github.com/supermetrolog/framework/pkg/http/response"
+	contextInterface "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 )
 
 type PipelineFactory interface {
@@ -35,19 +34,18 @@ func (r Router) makePipeline(middlewares []handler.Middleware) app.Pipeline {
 	}
 	return pipeline
 }
-func (r Router) makeRequest(defaultRequest *http.Request, params httprouter.Params) request.Request {
-	paramsMap := make(map[string]string, len(params))
-	for _, p := range params {
-		paramsMap[p.Key] = p.Value
+func (router Router) makeHttpContext(r *http.Request, rw contextInterface.ResponseWriter, p httprouter.Params) contextInterface.Context {
+	params := make(map[string]string, len(p))
+	for _, param := range p {
+		params[param.Key] = param.Value
 	}
-	return reqst.NewRequest(defaultRequest, paramsMap)
+	return httpcontext.New(r, rw, params)
 }
 func (router Router) makeHandlerAdapter(handler handler.Handler, middlewares []handler.Middleware) httprouter.Handle {
 	pipeline := router.makePipeline(middlewares)
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		req := router.makeRequest(r, p)
-		resWriter := response.NewResponseWriter()
-		res, err := pipeline.Handler(resWriter, req, handler)
+		httpCtx := router.makeHttpContext(r, httpcontext.NewResponseWriter(), p)
+		res, err := pipeline.Handler(httpCtx, handler)
 		if err != nil {
 			return
 		}

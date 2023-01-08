@@ -4,8 +4,7 @@ import (
 	"errors"
 
 	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/request"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/response"
+	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
 	"github.com/supermetrolog/framework/pkg/queue"
 )
 
@@ -17,8 +16,8 @@ type nextWrapper struct {
 	n *next
 }
 
-func (n nextWrapper) Handler(res response.ResponseWriter, req request.Request) (response.Response, error) {
-	return n.n.Next(res, req)
+func (n nextWrapper) Handler(c httpcontext.Context) (httpcontext.Response, error) {
+	return n.n.Next(c)
 }
 func newNext(q queue.Queue, handler handler.Handler) next {
 	return next{
@@ -26,13 +25,13 @@ func newNext(q queue.Queue, handler handler.Handler) next {
 		handler:  handler,
 	}
 }
-func (n next) Next(res response.ResponseWriter, req request.Request) (response.Response, error) {
+func (n next) Next(c httpcontext.Context) (httpcontext.Response, error) {
 	if n.Handlers.IsEmpty() {
-		return n.handler.Handler(res, req)
+		return n.handler.Handler(c)
 	}
 	current, ok := n.Handlers.Dequeue().(handler.Middleware)
 	if !ok {
 		return nil, errors.New("unknown item in Handlers Queue")
 	}
-	return current.Handler(res, req, nextWrapper{n: &n})
+	return current.Handler(c, nextWrapper{n: &n})
 }
