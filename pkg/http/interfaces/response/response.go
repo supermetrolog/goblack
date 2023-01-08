@@ -3,7 +3,7 @@ package response
 type Response interface {
 	Content() []byte
 	StatusCode() int
-	Headers() map[string]string
+	Headers() map[string][]string
 }
 
 type ResponseWriter interface {

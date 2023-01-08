@@ -8,9 +8,10 @@ import (
 )
 
 func TestNewResponse(t *testing.T) {
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"server":       "nginx",
+	headers := map[string][]string{
+		"Content-Type": {"application/json"},
+		"server":       {"nginx"},
+		"list":         {"one", "two"},
 	}
 
 	content := []byte("test content")

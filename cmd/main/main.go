@@ -74,6 +74,6 @@ func main() {
 	app2 := application.New(pipeline.New())
 	app2.Pipe(LoggerMiddleware{})
 	app.Pipe(app2)
-	app.Handler(resps.NewResponseWriter(), reqst.NewRequest(nil, nil, nil, nil), NewHandler(log.Logger{}))
+	app.Handler(resps.NewResponseWriter(), reqst.NewRequest(nil, nil), NewHandler(log.Logger{}))
 	app.GET("/users", NewHandler(log.Logger{}), LoggerMiddleware{}, LoggerMiddleware2{})
 }

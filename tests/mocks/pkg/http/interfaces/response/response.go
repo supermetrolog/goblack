@@ -49,10 +49,10 @@ func (mr *MockResponseMockRecorder) Content() *gomock.Call {
 }
 
 // Headers mocks base method.
-func (m *MockResponse) Headers() map[string]string {
+func (m *MockResponse) Headers() map[string][]string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Headers")
-	ret0, _ := ret[0].(map[string]string)
+	ret0, _ := ret[0].(map[string][]string)
 	return ret0
 }
 

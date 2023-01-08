@@ -62,11 +62,25 @@ func (mr *MockRequestMockRecorder) Header(name interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Header", reflect.TypeOf((*MockRequest)(nil).Header), name)
 }
 
+// HeaderValues mocks base method.
+func (m *MockRequest) HeaderValues(name string) []string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HeaderValues", name)
+	ret0, _ := ret[0].([]string)
+	return ret0
+}
+
+// HeaderValues indicates an expected call of HeaderValues.
+func (mr *MockRequestMockRecorder) HeaderValues(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HeaderValues", reflect.TypeOf((*MockRequest)(nil).HeaderValues), name)
+}
+
 // Headers mocks base method.
-func (m *MockRequest) Headers() map[string]string {
+func (m *MockRequest) Headers() map[string][]string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Headers")
-	ret0, _ := ret[0].(map[string]string)
+	ret0, _ := ret[0].(map[string][]string)
 	return ret0
 }
 
@@ -104,11 +118,25 @@ func (mr *MockRequestMockRecorder) QueryParam(name interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryParam", reflect.TypeOf((*MockRequest)(nil).QueryParam), name)
 }
 
+// QueryParamValues mocks base method.
+func (m *MockRequest) QueryParamValues(name string) []string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "QueryParamValues", name)
+	ret0, _ := ret[0].([]string)
+	return ret0
+}
+
+// QueryParamValues indicates an expected call of QueryParamValues.
+func (mr *MockRequestMockRecorder) QueryParamValues(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryParamValues", reflect.TypeOf((*MockRequest)(nil).QueryParamValues), name)
+}
+
 // QueryParams mocks base method.
-func (m *MockRequest) QueryParams() map[string]string {
+func (m *MockRequest) QueryParams() map[string][]string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "QueryParams")
-	ret0, _ := ret[0].(map[string]string)
+	ret0, _ := ret[0].(map[string][]string)
 	return ret0
 }
 

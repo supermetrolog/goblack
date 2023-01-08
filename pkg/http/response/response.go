@@ -10,13 +10,13 @@ import (
 type Response struct {
 	content    []byte
 	statusCode int
-	headers    map[string]string
+	headers    map[string][]string
 }
 
 func NewResponse(
 	content []byte,
 	statusCode int,
-	headers map[string]string,
+	headers map[string][]string,
 ) *Response {
 	return &Response{
 		content:    content,
@@ -30,19 +30,19 @@ func (r Response) Content() []byte {
 func (r Response) StatusCode() int {
 	return r.statusCode
 }
-func (r Response) Headers() map[string]string {
+func (r Response) Headers() map[string][]string {
 	return r.headers
 }
 
 type ResponseWriter struct {
 	content    any
 	statusCode int
-	headers    map[string]string
+	headers    map[string][]string
 }
 
 func NewResponseWriter() *ResponseWriter {
 	return &ResponseWriter{
-		headers: make(map[string]string),
+		headers: make(map[string][]string),
 	}
 }
 func (r *ResponseWriter) SetContent(content any) response.ResponseWriter {
@@ -54,7 +54,7 @@ func (r *ResponseWriter) SetStatusCode(statusCode int) response.ResponseWriter {
 	return r
 }
 func (r *ResponseWriter) AddHeader(key string, value string) response.ResponseWriter {
-	r.headers[key] = value
+	r.headers[key] = append(r.headers[key], value)
 	return r
 }
 func (r ResponseWriter) JsonResponse() (response.Response, error) {

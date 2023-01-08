@@ -28,13 +28,17 @@ func TestSetStatusCode(t *testing.T) {
 
 func TestAddHeader(t *testing.T) {
 	resWriter := response.NewResponseWriter()
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"server":       "nginx",
-		"allow":        "*",
+	headers := map[string][]string{
+		"Content-Type": {"application/json"},
+		"server":       {"nginx"},
+		"allow":        {"*"},
+		"list":         {"one", "two"},
 	}
 	for key, h := range headers {
-		resWriter.AddHeader(key, h)
+		for _, value := range h {
+			resWriter.AddHeader(key, value)
+
+		}
 	}
 
 	res, err := resWriter.JsonResponse()
