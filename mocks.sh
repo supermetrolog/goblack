@@ -11,6 +11,8 @@ echo "Generate PKG mocks..."
 pkg_files=(
             http/interfaces/handler/handler.go
             http/interfaces/httpcontext/httpcontext.go
+            http/app/app.go
+            http/router/router.go
             )
 
 for file in ${pkg_files[*]}

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -20,15 +21,16 @@ type Router struct {
 	externalRouter  *httprouter.Router
 }
 
-func NewRouter(mainPipeline app.Pipeline, pipelineFactory PipelineFactory) *Router {
+func New(mainPipeline app.Pipeline, pipelineFactory PipelineFactory, externalRouter *httprouter.Router) *Router {
 	return &Router{
 		mainPipeline:    mainPipeline,
 		pipelineFactory: pipelineFactory,
+		externalRouter:  externalRouter,
 	}
 }
-func (r Router) makePipeline(middlewares []handler.Middleware) app.Pipeline {
-	pipeline := r.pipelineFactory.Create()
-	pipeline.Pipe(r.mainPipeline)
+func (router Router) makePipeline(middlewares []handler.Middleware) app.Pipeline {
+	pipeline := router.pipelineFactory.Create()
+	pipeline.Pipe(router.mainPipeline)
 	for _, middleware := range middlewares {
 		pipeline.Pipe(middleware)
 	}
@@ -49,11 +51,15 @@ func (router Router) makeHandlerAdapter(handler handler.Handler, middlewares []h
 		if err != nil {
 			return
 		}
-		w.WriteHeader(res.StatusCode())
+
 		for key, h := range res.Headers() {
 			for _, value := range h {
+				log.Println(key, value)
 				w.Header().Add(key, value)
 			}
+		}
+		if res.StatusCode() != 0 {
+			w.WriteHeader(res.StatusCode())
 		}
 		w.Write(res.Content())
 	}

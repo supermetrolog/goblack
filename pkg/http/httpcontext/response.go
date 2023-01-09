@@ -57,10 +57,26 @@ func (r *ResponseWriter) AddHeader(key string, value string) httpcontext.Respons
 	r.headers[key] = append(r.headers[key], value)
 	return r
 }
+func (r *ResponseWriter) HasHeaderValue(key string, value string) bool {
+	header, ok := r.headers[key]
+	if !ok {
+		return false
+	}
+	for _, v := range header {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
 func (r ResponseWriter) JsonResponse() (httpcontext.Response, error) {
 	bytes, err := json.Marshal(r.content)
 	if err != nil {
 		return nil, err
+	}
+
+	if !r.HasHeaderValue("Content-Type", "application/json") {
+		r.AddHeader("Content-Type", "application/json")
 	}
 	response := NewResponse(bytes, r.statusCode, r.headers)
 	return response, nil

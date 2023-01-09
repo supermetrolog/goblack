@@ -16,11 +16,13 @@ type Router interface {
 
 type App struct {
 	pipeline Pipeline
+	router   Router
 }
 
-func New(pipeline Pipeline) *App {
+func New(pipeline Pipeline, router Router) *App {
 	return &App{
 		pipeline: pipeline,
+		router:   router,
 	}
 }
 
@@ -33,5 +35,5 @@ func (app App) Handler(c httpcontext.Context, next handler.Handler) (httpcontext
 }
 
 func (app *App) GET(path string, handler handler.Handler, middlewares ...handler.Middleware) {
-
+	app.router.GET(path, handler, middlewares...)
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/supermetrolog/framework/pkg/http/httpcontext"
 )
 
@@ -44,6 +45,32 @@ func TestAddHeader(t *testing.T) {
 	res, err := resWriter.JsonResponse()
 	assert.NoError(t, err)
 	assert.Equal(t, headers, res.Headers())
+}
+func TestJsonResponse(t *testing.T) {
+	resWriter := httpcontext.NewResponseWriter()
+	content := "content"
+	contentBytes, _ := json.Marshal(content)
+	resWriter.SetContent(content)
+	res, err := resWriter.JsonResponse()
+	contentTypes, ok := res.Headers()["Content-Type"]
+	require.True(t, ok)
+	assert.Equal(t, "application/json", contentTypes[0])
+	assert.NoError(t, err)
+	assert.Equal(t, contentBytes, res.Content())
+}
+func TestJsonResponseDoubleCall(t *testing.T) {
+	resWriter := httpcontext.NewResponseWriter()
+	content := "content"
+	contentBytes, _ := json.Marshal(content)
+	resWriter.SetContent(content)
+	resWriter.JsonResponse()
+	res, err := resWriter.JsonResponse()
+	contentTypes, ok := res.Headers()["Content-Type"]
+	require.True(t, ok)
+	assert.Len(t, contentTypes, 1)
+	assert.Equal(t, "application/json", contentTypes[0])
+	assert.NoError(t, err)
+	assert.Equal(t, contentBytes, res.Content())
 }
 func TestJsonResponseWithStruct(t *testing.T) {
 	resWriter := httpcontext.NewResponseWriter()
