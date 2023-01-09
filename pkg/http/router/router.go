@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -54,7 +53,6 @@ func (router Router) makeHandlerAdapter(handler handler.Handler, middlewares []h
 
 		for key, h := range res.Headers() {
 			for _, value := range h {
-				log.Println(key, value)
 				w.Header().Add(key, value)
 			}
 		}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	application "github.com/supermetrolog/framework/pkg/http/app"
@@ -13,25 +14,17 @@ import (
 	"github.com/supermetrolog/framework/pkg/http/router"
 )
 
-type AdapterMiddleware struct {
-	W http.ResponseWriter
-	R *http.Request
-}
-
-func (l AdapterMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
-	log.Println("Logger middleware")
-
-	nextRes, err := next.Handler(c)
-	log.Println(nextRes.Headers())
-	return nextRes, err
-}
-
 type LoggerMiddleware struct{}
 
 func (l LoggerMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
 	log.Println("Logger middleware")
-
+	startTime := time.Now().UnixMicro()
 	nextRes, err := next.Handler(c)
+	endTime := time.Now().UnixMicro()
+	delay := endTime - startTime
+	delayInSeconds := float64(delay) / float64(1000000)
+	log.Println("PROFILE TIME", startTime, endTime, delayInSeconds)
+	c.ResponseWriter().AddHeader("X-Profile-Time", fmt.Sprintf("%f", delayInSeconds))
 	log.Println(nextRes.Headers())
 	return nextRes, err
 }
