@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	app "github.com/supermetrolog/framework/pkg/http/app"
+	goblack "github.com/supermetrolog/goblack"
 )
 
 // MockPipelineFactory is a mock of PipelineFactory interface.
@@ -35,10 +35,10 @@ func (m *MockPipelineFactory) EXPECT() *MockPipelineFactoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockPipelineFactory) Create() app.Pipeline {
+func (m *MockPipelineFactory) Create() goblack.Pipeline {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create")
-	ret0, _ := ret[0].(app.Pipeline)
+	ret0, _ := ret[0].(goblack.Pipeline)
 	return ret0
 }
 

@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	httpcontext "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
+	httpcontext "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
 // MockResponse is a mock of Response interface.

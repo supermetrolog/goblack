@@ -5,11 +5,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
-	"github.com/supermetrolog/framework/pkg/http/pipeline"
-	mock_handler "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/handler"
-	mock_httpcontex "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/pipeline"
+	mock_handler "github.com/supermetrolog/goblack/tests/mocks/pkg/http/interfaces/handler"
+	mock_httpcontex "github.com/supermetrolog/goblack/tests/mocks/pkg/http/interfaces/httpcontext"
 )
 
 func TestPipeline_pipe(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/supermetrolog/framework/pkg/http/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/httpcontext"
 )
 
 func TestSetContent(t *testing.T) {

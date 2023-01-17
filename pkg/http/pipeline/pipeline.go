@@ -3,9 +3,9 @@ package pipeline
 import (
 	"errors"
 
-	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
-	"github.com/supermetrolog/framework/pkg/queue"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/queue"
 )
 
 type Pipeline struct {

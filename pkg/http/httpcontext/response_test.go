@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/framework/pkg/http/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/httpcontext"
 )
 
 func TestNewResponse(t *testing.T) {

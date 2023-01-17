@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
 type Handler interface {

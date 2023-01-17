@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/framework/pkg/http/httpcontext"
-	mock_httpcontex "github.com/supermetrolog/framework/tests/mocks/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/httpcontext"
+	mock_httpcontex "github.com/supermetrolog/goblack/tests/mocks/pkg/http/interfaces/httpcontext"
 )
 
 func TestParam(t *testing.T) {

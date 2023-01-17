@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	handler "github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	httpcontext "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
+	handler "github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
+	httpcontext "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
 // MockHandler is a mock of Handler interface.

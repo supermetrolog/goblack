@@ -7,25 +7,22 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	application "github.com/supermetrolog/framework/pkg/http/app"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	httpcontextInterface "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
-	"github.com/supermetrolog/framework/pkg/http/pipeline"
-	"github.com/supermetrolog/framework/pkg/http/router"
+	application "github.com/supermetrolog/goblack"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
+	httpcontextInterface "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/pipeline"
+	"github.com/supermetrolog/goblack/pkg/http/router"
 )
 
 type LoggerMiddleware struct{}
 
 func (l LoggerMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
-	log.Println("Logger middleware")
 	startTime := time.Now().UnixMicro()
 	nextRes, err := next.Handler(c)
 	endTime := time.Now().UnixMicro()
 	delay := endTime - startTime
 	delayInSeconds := float64(delay) / float64(1000000)
-	log.Println("PROFILE TIME", startTime, endTime, delayInSeconds)
 	c.ResponseWriter().AddHeader("X-Profile-Time", fmt.Sprintf("%f", delayInSeconds))
-	log.Println(nextRes.Headers())
 	return nextRes, err
 }
 
@@ -56,17 +53,34 @@ func (l Handler) Handler(c httpcontextInterface.Context) (httpcontextInterface.R
 	c.ResponseWriter().AddHeader("nigga", "pidor")
 	return c.ResponseWriter().JsonResponse()
 }
+
+type UserHandler struct {
+	logger log.Logger
+}
+
+func NewUserHandler(logger log.Logger) UserHandler {
+	return UserHandler{
+		logger: logger,
+	}
+}
+func (uh UserHandler) Handler(c httpcontextInterface.Context) (httpcontextInterface.Response, error) {
+	log.Println("NIGGA")
+	id := c.Param("id")
+	c.ResponseWriter().SetStatusCode(http.StatusOK)
+	c.ResponseWriter().SetContent(id)
+	return c.ResponseWriter().JsonResponse()
+}
 func main() {
 	fmt.Println("MAIN")
-	// r, _ := http.NewRequest("GET", "/users", nil)
-	// httpContext := httpcontext.New(r, httpcontext.NewResponseWriter(), map[string]string{"id": "12", "test": "1234"})
 	pipelineFactory := pipeline.NewFactory()
 	pipelineMain := pipelineFactory.Create()
 	externalRouter := httprouter.New()
-	app := application.New(pipelineMain, router.New(pipelineMain, pipelineFactory, externalRouter))
+	app := application.New(pipelineMain, router.New(pipelineMain, pipelineFactory, externalRouter), application.ServerConfig{
+		Addr: ":8080",
+	})
 	app.Pipe(LoggerMiddleware{})
-	// app.Handler(httpContext, NewHandler(log.Logger{}))
 	app.GET("/users", NewHandler(log.Logger{}), LoggerMiddleware2{})
-
-	http.ListenAndServe(":8080", externalRouter)
+	app.GET("/users/:id", NewUserHandler(log.Logger{}))
+	// http.ListenAndServe(":8080", externalRouter)
+	app.Run()
 }

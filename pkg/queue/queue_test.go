@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/framework/pkg/queue"
+	"github.com/supermetrolog/goblack/pkg/queue"
 )
 
 func TestQueue_Length(t *testing.T) {

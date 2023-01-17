@@ -4,30 +4,30 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/supermetrolog/framework/pkg/http/app"
-	"github.com/supermetrolog/framework/pkg/http/httpcontext"
-	"github.com/supermetrolog/framework/pkg/http/interfaces/handler"
-	contextInterface "github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack"
+	"github.com/supermetrolog/goblack/pkg/http/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
+	contextInterface "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
 type PipelineFactory interface {
-	Create() app.Pipeline
+	Create() goblack.Pipeline
 }
 
 type Router struct {
-	mainPipeline    app.Pipeline
+	mainPipeline    goblack.Pipeline
 	pipelineFactory PipelineFactory
 	externalRouter  *httprouter.Router
 }
 
-func New(mainPipeline app.Pipeline, pipelineFactory PipelineFactory, externalRouter *httprouter.Router) *Router {
+func New(mainPipeline goblack.Pipeline, pipelineFactory PipelineFactory, externalRouter *httprouter.Router) *Router {
 	return &Router{
 		mainPipeline:    mainPipeline,
 		pipelineFactory: pipelineFactory,
 		externalRouter:  externalRouter,
 	}
 }
-func (router Router) makePipeline(middlewares []handler.Middleware) app.Pipeline {
+func (router Router) makePipeline(middlewares []handler.Middleware) goblack.Pipeline {
 	pipeline := router.pipelineFactory.Create()
 	pipeline.Pipe(router.mainPipeline)
 	for _, middleware := range middlewares {

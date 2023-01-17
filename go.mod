@@ -1,4 +1,4 @@
-module github.com/supermetrolog/framework
+module github.com/supermetrolog/goblack
 
 go 1.18
 

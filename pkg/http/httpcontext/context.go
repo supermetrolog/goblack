@@ -3,7 +3,7 @@ package httpcontext
 import (
 	"net/http"
 
-	"github.com/supermetrolog/framework/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
 type Context struct {
