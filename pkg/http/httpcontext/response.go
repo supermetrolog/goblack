@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack"
 )
 
 type Response struct {
@@ -45,15 +45,15 @@ func NewResponseWriter() *ResponseWriter {
 		headers: make(map[string][]string),
 	}
 }
-func (r *ResponseWriter) SetContent(content any) httpcontext.ResponseWriter {
+func (r *ResponseWriter) SetContent(content any) goblack.ResponseWriter {
 	r.content = content
 	return r
 }
-func (r *ResponseWriter) SetStatusCode(statusCode int) httpcontext.ResponseWriter {
+func (r *ResponseWriter) SetStatusCode(statusCode int) goblack.ResponseWriter {
 	r.statusCode = statusCode
 	return r
 }
-func (r *ResponseWriter) AddHeader(key string, value string) httpcontext.ResponseWriter {
+func (r *ResponseWriter) AddHeader(key string, value string) goblack.ResponseWriter {
 	r.headers[key] = append(r.headers[key], value)
 	return r
 }
@@ -69,7 +69,7 @@ func (r *ResponseWriter) HasHeaderValue(key string, value string) bool {
 	}
 	return false
 }
-func (r ResponseWriter) JsonResponse() (httpcontext.Response, error) {
+func (r ResponseWriter) JsonResponse() (goblack.Response, error) {
 	bytes, err := json.Marshal(r.content)
 	if err != nil {
 		return nil, err
@@ -81,10 +81,10 @@ func (r ResponseWriter) JsonResponse() (httpcontext.Response, error) {
 	response := NewResponse(bytes, r.statusCode, r.headers)
 	return response, nil
 }
-func (r ResponseWriter) HtmlResponse() (httpcontext.Response, error) {
+func (r ResponseWriter) HtmlResponse() (goblack.Response, error) {
 	return nil, nil
 }
-func (r ResponseWriter) XmlResponse() (httpcontext.Response, error) {
+func (r ResponseWriter) XmlResponse() (goblack.Response, error) {
 	bytes, err := xml.Marshal(r.content)
 	if err != nil {
 		return nil, err

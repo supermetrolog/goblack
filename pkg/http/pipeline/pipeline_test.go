@@ -5,11 +5,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack"
+	mock_goblack "github.com/supermetrolog/goblack/mocks"
 	"github.com/supermetrolog/goblack/pkg/http/pipeline"
-	mock_handler "github.com/supermetrolog/goblack/tests/mocks/pkg/http/interfaces/handler"
-	mock_httpcontex "github.com/supermetrolog/goblack/tests/mocks/pkg/http/interfaces/httpcontext"
 )
 
 func TestPipeline_pipe(t *testing.T) {
@@ -18,8 +16,8 @@ func TestPipeline_pipe(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockHandler := mock_handler.NewMockMiddleware(ctrl)
-	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
+	mockHandler := mock_goblack.NewMockMiddleware(ctrl)
+	mockHandler2 := mock_goblack.NewMockMiddleware(ctrl)
 
 	p.Pipe(mockHandler)
 	p.Pipe(mockHandler2)
@@ -33,9 +31,9 @@ func TestPipeline_runWithOnlyOneHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockCtx := mock_httpcontex.NewMockContext(ctrl)
+	mockCtx := mock_goblack.NewMockContext(ctrl)
 
-	mockHandler := mock_handler.NewMockHandler(ctrl)
+	mockHandler := mock_goblack.NewMockHandler(ctrl)
 	mockHandler.EXPECT().Handler(mockCtx)
 
 	_, err := p.Handler(mockCtx, mockHandler)
@@ -47,7 +45,7 @@ func TestPipeline_runWithNilHandler(t *testing.T) {
 	p := pipeline.New()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockCtx := mock_httpcontex.NewMockContext(ctrl)
+	mockCtx := mock_goblack.NewMockContext(ctrl)
 	_, err := p.Handler(mockCtx, nil)
 	assert.Error(t, err)
 }
@@ -57,8 +55,8 @@ func TestPipeline_runWithManyHandlers(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockCtx := mock_httpcontex.NewMockContext(ctrl)
-	mockResWriter := mock_httpcontex.NewMockResponseWriter(ctrl)
+	mockCtx := mock_goblack.NewMockContext(ctrl)
+	mockResWriter := mock_goblack.NewMockResponseWriter(ctrl)
 	mockCtx.EXPECT().ResponseWriter().Return(mockResWriter).Times(5)
 	firstCall := mockResWriter.EXPECT().AddHeader("header1", "value1")
 	secondCall := mockResWriter.EXPECT().AddHeader("header2", "value2")
@@ -87,18 +85,18 @@ func TestPipeline_doubleRun(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockCtx := mock_httpcontex.NewMockContext(ctrl)
+	mockCtx := mock_goblack.NewMockContext(ctrl)
 
-	mockHandlerDefault := mock_handler.NewMockHandler(ctrl)
+	mockHandlerDefault := mock_goblack.NewMockHandler(ctrl)
 	mockHandlerDefault.EXPECT().Handler(mockCtx).Times(2)
 
-	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
-	mockHandler2.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+	mockHandler2 := mock_goblack.NewMockMiddleware(ctrl)
+	mockHandler2.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 		return next.Handler(c)
 	}).Times(2)
 
-	mockHandler1 := mock_handler.NewMockMiddleware(ctrl)
-	mockHandler1.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+	mockHandler1 := mock_goblack.NewMockMiddleware(ctrl)
+	mockHandler1.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 		return next.Handler(c)
 	}).Times(2)
 
@@ -118,18 +116,18 @@ func TestPipeline_PipelineInPipeline(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockCtx := mock_httpcontex.NewMockContext(ctrl)
+	mockCtx := mock_goblack.NewMockContext(ctrl)
 
-	mockHandlerDefault := mock_handler.NewMockHandler(ctrl)
+	mockHandlerDefault := mock_goblack.NewMockHandler(ctrl)
 	mockHandlerDefault.EXPECT().Handler(mockCtx)
 
-	mockHandler2 := mock_handler.NewMockMiddleware(ctrl)
-	mockHandler2.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+	mockHandler2 := mock_goblack.NewMockMiddleware(ctrl)
+	mockHandler2.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 		return next.Handler(c)
 	}).Times(2)
 
-	mockHandler1 := mock_handler.NewMockMiddleware(ctrl)
-	mockHandler1.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+	mockHandler1 := mock_goblack.NewMockMiddleware(ctrl)
+	mockHandler1.EXPECT().Handler(mockCtx, gomock.Any()).DoAndReturn(func(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 		return next.Handler(c)
 	}).Times(2)
 
@@ -146,21 +144,21 @@ func TestPipeline_PipelineInPipeline(t *testing.T) {
 
 type mockMiddleware1 struct{}
 
-func (m mockMiddleware1) Handler(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+func (m mockMiddleware1) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	c.ResponseWriter().AddHeader("header1", "value1")
 	return next.Handler(c)
 }
 
 type mockMiddleware2 struct{}
 
-func (m mockMiddleware2) Handler(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+func (m mockMiddleware2) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	c.ResponseWriter().AddHeader("header2", "value2")
 	return next.Handler(c)
 }
 
 type mockMiddleware3 struct{}
 
-func (m mockMiddleware3) Handler(c httpcontext.Context, next handler.Handler) (httpcontext.Response, error) {
+func (m mockMiddleware3) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	c.ResponseWriter().AddHeader("header3", "value3")
 	c.ResponseWriter().SetContent("suka")
 	return c.ResponseWriter().JsonResponse()
@@ -168,7 +166,7 @@ func (m mockMiddleware3) Handler(c httpcontext.Context, next handler.Handler) (h
 
 type mockHandler struct{}
 
-func (m mockHandler) Handler(c httpcontext.Context) (httpcontext.Response, error) {
+func (m mockHandler) Handler(c goblack.Context) (goblack.Response, error) {
 	c.ResponseWriter().AddHeader("header4", "value4")
 	c.ResponseWriter().SetContent("content")
 	return c.ResponseWriter().JsonResponse()

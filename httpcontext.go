@@ -1,8 +1,6 @@
-package httpcontext
+package goblack
 
-import (
-	"net/http"
-)
+import "net/http"
 
 type Response interface {
 	Content() []byte

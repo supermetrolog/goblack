@@ -7,16 +7,14 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	application "github.com/supermetrolog/goblack"
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
-	httpcontextInterface "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack"
 	"github.com/supermetrolog/goblack/pkg/http/pipeline"
 	"github.com/supermetrolog/goblack/pkg/http/router"
 )
 
 type LoggerMiddleware struct{}
 
-func (l LoggerMiddleware) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
+func (l LoggerMiddleware) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	startTime := time.Now().UnixMicro()
 	nextRes, err := next.Handler(c)
 	endTime := time.Now().UnixMicro()
@@ -28,7 +26,7 @@ func (l LoggerMiddleware) Handler(c httpcontextInterface.Context, next handler.H
 
 type LoggerMiddleware2 struct{}
 
-func (l LoggerMiddleware2) Handler(c httpcontextInterface.Context, next handler.Handler) (httpcontextInterface.Response, error) {
+func (l LoggerMiddleware2) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	log.Println("Logger middleware2")
 	c.ResponseWriter().SetContent("fuck")
 	next.Handler(c)
@@ -45,7 +43,7 @@ func NewHandler(logger log.Logger) Handler {
 		logger: logger,
 	}
 }
-func (l Handler) Handler(c httpcontextInterface.Context) (httpcontextInterface.Response, error) {
+func (l Handler) Handler(c goblack.Context) (goblack.Response, error) {
 	log.Println("Handler")
 	array := []string{"gomosek", "4mo"}
 	c.ResponseWriter().SetStatusCode(http.StatusBadRequest)
@@ -63,7 +61,7 @@ func NewUserHandler(logger log.Logger) UserHandler {
 		logger: logger,
 	}
 }
-func (uh UserHandler) Handler(c httpcontextInterface.Context) (httpcontextInterface.Response, error) {
+func (uh UserHandler) Handler(c goblack.Context) (goblack.Response, error) {
 	log.Println("NIGGA")
 	id := c.Param("id")
 	c.ResponseWriter().SetStatusCode(http.StatusOK)
@@ -75,7 +73,7 @@ func main() {
 	pipelineFactory := pipeline.NewFactory()
 	pipelineMain := pipelineFactory.Create()
 	externalRouter := httprouter.New()
-	app := application.New(pipelineMain, router.New(pipelineMain, pipelineFactory, externalRouter), application.ServerConfig{
+	app := goblack.New(pipelineMain, router.New(pipelineMain, pipelineFactory, externalRouter), goblack.ServerConfig{
 		Addr: ":8080",
 	})
 	app.Pipe(LoggerMiddleware{})

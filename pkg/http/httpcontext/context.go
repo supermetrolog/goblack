@@ -3,16 +3,16 @@ package httpcontext
 import (
 	"net/http"
 
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
+	"github.com/supermetrolog/goblack"
 )
 
 type Context struct {
 	r  *http.Request
-	rw httpcontext.ResponseWriter
+	rw goblack.ResponseWriter
 	p  map[string]string
 }
 
-func New(r *http.Request, rw httpcontext.ResponseWriter, p map[string]string) *Context {
+func New(r *http.Request, rw goblack.ResponseWriter, p map[string]string) *Context {
 	return &Context{
 		r:  r,
 		rw: rw,
@@ -23,7 +23,7 @@ func New(r *http.Request, rw httpcontext.ResponseWriter, p map[string]string) *C
 func (c Context) Request() *http.Request {
 	return c.r
 }
-func (c Context) ResponseWriter() httpcontext.ResponseWriter {
+func (c Context) ResponseWriter() goblack.ResponseWriter {
 	return c.rw
 }
 func (c Context) Param(key string) string {

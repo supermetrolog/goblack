@@ -6,10 +6,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/supermetrolog/goblack"
 	"github.com/supermetrolog/goblack/pkg/http/httpcontext"
-	"github.com/supermetrolog/goblack/pkg/http/interfaces/handler"
-	contextInterface "github.com/supermetrolog/goblack/pkg/http/interfaces/httpcontext"
 )
 
+//go:generate mockgen -destination=mocks/mock_router.go -package=mock_router . PipelineFactory
 type PipelineFactory interface {
 	Create() goblack.Pipeline
 }
@@ -27,7 +26,7 @@ func New(mainPipeline goblack.Pipeline, pipelineFactory PipelineFactory, externa
 		externalRouter:  externalRouter,
 	}
 }
-func (router Router) makePipeline(middlewares []handler.Middleware) goblack.Pipeline {
+func (router Router) makePipeline(middlewares []goblack.Middleware) goblack.Pipeline {
 	pipeline := router.pipelineFactory.Create()
 	pipeline.Pipe(router.mainPipeline)
 	for _, middleware := range middlewares {
@@ -35,14 +34,14 @@ func (router Router) makePipeline(middlewares []handler.Middleware) goblack.Pipe
 	}
 	return pipeline
 }
-func (router Router) makeHttpContext(r *http.Request, rw contextInterface.ResponseWriter, p httprouter.Params) contextInterface.Context {
+func (router Router) makeHttpContext(r *http.Request, rw goblack.ResponseWriter, p httprouter.Params) goblack.Context {
 	params := make(map[string]string, len(p))
 	for _, param := range p {
 		params[param.Key] = param.Value
 	}
 	return httpcontext.New(r, rw, params)
 }
-func (router Router) makeHandlerAdapter(handler handler.Handler, middlewares []handler.Middleware) httprouter.Handle {
+func (router Router) makeHandlerAdapter(handler goblack.Handler, middlewares []goblack.Middleware) httprouter.Handle {
 	pipeline := router.makePipeline(middlewares)
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		httpCtx := router.makeHttpContext(r, httpcontext.NewResponseWriter(), p)
