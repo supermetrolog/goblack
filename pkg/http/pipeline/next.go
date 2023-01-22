@@ -11,13 +11,7 @@ type next struct {
 	handler  goblack.Handler
 	Handlers queue.Queue
 }
-type nextWrapper struct {
-	n *next
-}
 
-func (n nextWrapper) Handler(c goblack.Context) (goblack.Response, error) {
-	return n.n.Next(c)
-}
 func newNext(q queue.Queue, handler goblack.Handler) next {
 	return next{
 		Handlers: q,
@@ -33,4 +27,12 @@ func (n next) Next(c goblack.Context) (goblack.Response, error) {
 		return nil, errors.New("unknown item in Handlers Queue")
 	}
 	return current.Handler(c, nextWrapper{n: &n})
+}
+
+type nextWrapper struct {
+	n *next
+}
+
+func (n nextWrapper) Handler(c goblack.Context) (goblack.Response, error) {
+	return n.n.Next(c)
 }
