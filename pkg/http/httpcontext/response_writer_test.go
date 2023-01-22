@@ -11,24 +11,24 @@ import (
 )
 
 func TestSetContent(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := "test content"
 	contentBytes, _ := json.Marshal(content)
-	resWriter.SetContent(content)
-	res, err := resWriter.JsonResponse()
+	writer.Write(content)
+	res, err := writer.JSON()
 	assert.NoError(t, err)
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestSetStatusCode(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
-	resWriter.SetStatusCode(404)
-	res, err := resWriter.JsonResponse()
+	writer := httpcontext.NewWriter()
+	writer.WriteStatus(404)
+	res, err := writer.JSON()
 	assert.NoError(t, err)
 	assert.Equal(t, 404, res.StatusCode())
 }
 
 func TestAddHeader(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	headers := map[string][]string{
 		"Content-Type": {"application/json"},
 		"server":       {"nginx"},
@@ -37,21 +37,21 @@ func TestAddHeader(t *testing.T) {
 	}
 	for key, h := range headers {
 		for _, value := range h {
-			resWriter.AddHeader(key, value)
+			writer.WriteHeader(key, value)
 
 		}
 	}
 
-	res, err := resWriter.JsonResponse()
+	res, err := writer.JSON()
 	assert.NoError(t, err)
 	assert.Equal(t, headers, res.Headers())
 }
 func TestJsonResponse(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := "content"
 	contentBytes, _ := json.Marshal(content)
-	resWriter.SetContent(content)
-	res, err := resWriter.JsonResponse()
+	writer.Write(content)
+	res, err := writer.JSON()
 	contentTypes, ok := res.Headers()["Content-Type"]
 	require.True(t, ok)
 	assert.Equal(t, "application/json", contentTypes[0])
@@ -59,12 +59,12 @@ func TestJsonResponse(t *testing.T) {
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestJsonResponseDoubleCall(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := "content"
 	contentBytes, _ := json.Marshal(content)
-	resWriter.SetContent(content)
-	resWriter.JsonResponse()
-	res, err := resWriter.JsonResponse()
+	writer.Write(content)
+	writer.JSON()
+	res, err := writer.JSON()
 	contentTypes, ok := res.Headers()["Content-Type"]
 	require.True(t, ok)
 	assert.Len(t, contentTypes, 1)
@@ -73,7 +73,7 @@ func TestJsonResponseDoubleCall(t *testing.T) {
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestJsonResponseWithStruct(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := struct {
 		Username string
 		Password string
@@ -84,30 +84,30 @@ func TestJsonResponseWithStruct(t *testing.T) {
 		Name:     "Dodson",
 	}
 	contentBytes, _ := json.Marshal(content)
-	resWriter.SetContent(content)
-	res, err := resWriter.JsonResponse()
+	writer.Write(content)
+	res, err := writer.JSON()
 	assert.NoError(t, err)
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestXmlResponseWithString(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := "content"
 	contentBytes, _ := xml.Marshal(content)
-	resWriter.SetContent(content)
-	res, err := resWriter.XmlResponse()
+	writer.Write(content)
+	res, err := writer.XML()
 	assert.NoError(t, err)
 	assert.Equal(t, contentBytes, res.Content())
 }
 func TestXmlResponseWithArray(t *testing.T) {
-	resWriter := httpcontext.NewResponseWriter()
+	writer := httpcontext.NewWriter()
 	content := []string{
 		"John",
 		"qwerty",
 		"Dodson",
 	}
 	contentBytes, _ := xml.Marshal(content)
-	resWriter.SetContent(content)
-	res, err := resWriter.XmlResponse()
+	writer.Write(content)
+	res, err := writer.XML()
 	assert.NoError(t, err)
 	assert.Equal(t, contentBytes, res.Content())
 }

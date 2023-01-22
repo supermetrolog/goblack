@@ -15,7 +15,7 @@ func TestParam(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	httpCtx := httpcontext.New(httptest.NewRequest("GET", "/path", nil), mock_goblack.NewMockResponseWriter(ctrl), map[string]string{"id": "12", "test": "1234"})
+	httpCtx := httpcontext.New(httptest.NewRequest("GET", "/path", nil), mock_goblack.NewMockWriter(ctrl), map[string]string{"id": "12", "test": "1234"})
 	assert.Equal(t, "12", httpCtx.Param("id"))
 	assert.Equal(t, "1234", httpCtx.Param("test"))
 	assert.Equal(t, "", httpCtx.Param("notExistKey"))

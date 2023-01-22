@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-//go:generate mockgen -destination=mocks/mock_goblack.go -package=mock_goblack . Pipeline,Router,Handler,Middleware,Context,Response,ResponseWriter
+//go:generate mockgen -destination=mocks/mock_goblack.go -package=mock_goblack . Pipeline,Router,Handler,Middleware,Context,Response,Writer
 type Pipeline interface {
 	Middleware
 	Pipe(Middleware)

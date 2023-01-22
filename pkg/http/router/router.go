@@ -34,17 +34,17 @@ func (router Router) makePipeline(middlewares []goblack.Middleware) goblack.Pipe
 	}
 	return pipeline
 }
-func (router Router) makeHttpContext(r *http.Request, rw goblack.ResponseWriter, p httprouter.Params) goblack.Context {
+func (router Router) makeHttpContext(r *http.Request, w goblack.Writer, p httprouter.Params) *httpcontext.Context {
 	params := make(map[string]string, len(p))
 	for _, param := range p {
 		params[param.Key] = param.Value
 	}
-	return httpcontext.New(r, rw, params)
+	return httpcontext.New(r, w, params)
 }
 func (router Router) makeHandlerAdapter(handler goblack.Handler, middlewares []goblack.Middleware) httprouter.Handle {
 	pipeline := router.makePipeline(middlewares)
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		httpCtx := router.makeHttpContext(r, httpcontext.NewResponseWriter(), p)
+		httpCtx := router.makeHttpContext(r, httpcontext.NewWriter(), p)
 		res, err := pipeline.Handler(httpCtx, handler)
 		if err != nil {
 			return

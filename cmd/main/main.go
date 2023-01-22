@@ -20,7 +20,7 @@ func (l LoggerMiddleware) Handler(c goblack.Context, next goblack.Handler) (gobl
 	endTime := time.Now().UnixMicro()
 	delay := endTime - startTime
 	delayInSeconds := float64(delay) / float64(1000000)
-	c.ResponseWriter().AddHeader("X-Profile-Time", fmt.Sprintf("%f", delayInSeconds))
+	c.Writer().WriteHeader("X-Profile-Time", fmt.Sprintf("%f", delayInSeconds))
 	return nextRes, err
 }
 
@@ -28,10 +28,10 @@ type LoggerMiddleware2 struct{}
 
 func (l LoggerMiddleware2) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
 	log.Println("Logger middleware2")
-	c.ResponseWriter().SetContent("fuck")
+	c.Writer().Write("fuck")
 	next.Handler(c)
-	c.ResponseWriter().AddHeader("fuck", "suck")
-	return c.ResponseWriter().JsonResponse()
+	c.Writer().WriteHeader("fuck", "suck")
+	return c.Writer().JSON()
 }
 
 type Handler struct {
@@ -46,10 +46,10 @@ func NewHandler(logger log.Logger) Handler {
 func (l Handler) Handler(c goblack.Context) (goblack.Response, error) {
 	log.Println("Handler")
 	array := []string{"gomosek", "4mo"}
-	c.ResponseWriter().SetStatusCode(http.StatusBadRequest)
-	c.ResponseWriter().SetContent(array)
-	c.ResponseWriter().AddHeader("nigga", "pidor")
-	return c.ResponseWriter().JsonResponse()
+	c.Writer().WriteStatus(http.StatusBadRequest)
+	c.Writer().Write(array)
+	c.Writer().WriteHeader("nigga", "pidor")
+	return c.Writer().JSON()
 }
 
 type UserHandler struct {
@@ -64,9 +64,9 @@ func NewUserHandler(logger log.Logger) UserHandler {
 func (uh UserHandler) Handler(c goblack.Context) (goblack.Response, error) {
 	log.Println("NIGGA")
 	id := c.Param("id")
-	c.ResponseWriter().SetStatusCode(http.StatusOK)
-	c.ResponseWriter().SetContent(id)
-	return c.ResponseWriter().JsonResponse()
+	c.Writer().WriteStatus(http.StatusOK)
+	c.Writer().Write(id)
+	return c.Writer().JSON()
 }
 func main() {
 	fmt.Println("MAIN")

@@ -7,24 +7,24 @@ import (
 )
 
 type Context struct {
-	r  *http.Request
-	rw goblack.ResponseWriter
-	p  map[string]string
+	r *http.Request
+	w goblack.Writer
+	p map[string]string
 }
 
-func New(r *http.Request, rw goblack.ResponseWriter, p map[string]string) *Context {
+func New(r *http.Request, w goblack.Writer, p map[string]string) *Context {
 	return &Context{
-		r:  r,
-		rw: rw,
-		p:  p,
+		r: r,
+		w: w,
+		p: p,
 	}
 }
 
 func (c Context) Request() *http.Request {
 	return c.r
 }
-func (c Context) ResponseWriter() goblack.ResponseWriter {
-	return c.rw
+func (c Context) Writer() goblack.Writer {
+	return c.w
 }
 func (c Context) Param(key string) string {
 	value, ok := c.p[key]

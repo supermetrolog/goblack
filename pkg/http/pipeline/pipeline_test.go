@@ -56,19 +56,19 @@ func TestPipeline_runWithManyHandlers(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockCtx := mock_goblack.NewMockContext(ctrl)
-	mockResWriter := mock_goblack.NewMockResponseWriter(ctrl)
-	mockCtx.EXPECT().ResponseWriter().Return(mockResWriter).Times(5)
-	firstCall := mockResWriter.EXPECT().AddHeader("header1", "value1")
-	secondCall := mockResWriter.EXPECT().AddHeader("header2", "value2")
-	thirdCall := mockResWriter.EXPECT().AddHeader("header4", "value4")
+	mockWriter := mock_goblack.NewMockWriter(ctrl)
+	mockCtx.EXPECT().Writer().Return(mockWriter).Times(5)
+	firstCall := mockWriter.EXPECT().WriteHeader("header1", "value1")
+	secondCall := mockWriter.EXPECT().WriteHeader("header2", "value2")
+	thirdCall := mockWriter.EXPECT().WriteHeader("header4", "value4")
 	gomock.InOrder(
 		firstCall,
 		secondCall,
 		thirdCall,
 	)
 
-	mockResWriter.EXPECT().SetContent("content")
-	mockResWriter.EXPECT().JsonResponse()
+	mockWriter.EXPECT().Write("content")
+	mockWriter.EXPECT().JSON()
 
 	mock1 := mockMiddleware1{}
 	mock2 := mockMiddleware2{}
@@ -145,29 +145,29 @@ func TestPipeline_PipelineInPipeline(t *testing.T) {
 type mockMiddleware1 struct{}
 
 func (m mockMiddleware1) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
-	c.ResponseWriter().AddHeader("header1", "value1")
+	c.Writer().WriteHeader("header1", "value1")
 	return next.Handler(c)
 }
 
 type mockMiddleware2 struct{}
 
 func (m mockMiddleware2) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
-	c.ResponseWriter().AddHeader("header2", "value2")
+	c.Writer().WriteHeader("header2", "value2")
 	return next.Handler(c)
 }
 
 type mockMiddleware3 struct{}
 
 func (m mockMiddleware3) Handler(c goblack.Context, next goblack.Handler) (goblack.Response, error) {
-	c.ResponseWriter().AddHeader("header3", "value3")
-	c.ResponseWriter().SetContent("suka")
-	return c.ResponseWriter().JsonResponse()
+	c.Writer().WriteHeader("header3", "value3")
+	c.Writer().Write("suka")
+	return c.Writer().JSON()
 }
 
 type mockHandler struct{}
 
 func (m mockHandler) Handler(c goblack.Context) (goblack.Response, error) {
-	c.ResponseWriter().AddHeader("header4", "value4")
-	c.ResponseWriter().SetContent("content")
-	return c.ResponseWriter().JsonResponse()
+	c.Writer().WriteHeader("header4", "value4")
+	c.Writer().Write("content")
+	return c.Writer().JSON()
 }
